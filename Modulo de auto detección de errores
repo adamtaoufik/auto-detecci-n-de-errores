@@ -1,1 +1,62 @@
 # Hecho por Adam Taoufik Ezouhari
+#LIBRERIAS
+import psutill
+import os
+import subprocess
+import json
+
+
+
+
+
+#Variables
+
+servicios = []# añadir nombres de servicios como internet wifi impresora etc
+
+
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        return {}
+    with open(CONFIG_FILE, 'r') as f:
+        return json.load(f)
+
+'''load config se utiliza para cargar json haces como
+    a=/home/plantilla.json
+    b=load_config(a)
+    print(b)'''
+
+def save_config(config):
+    """Guarda la configuración en JSON"""
+    os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=4)
+    print(f"[OK] Configuración guardada en {CONFIG_FILE}")
+
+
+
+
+#funciones
+def run(cmd, check=True): # funcion para ejecutar comandos en la terminal Uso: run("ls -l")
+    return subprocess.run(cmd, shell=True, check=check, capture_output=True, text=True)
+
+
+def dect_servicios():
+    #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
+    # esta funcion se ejecuta al final
+
+def dect_sys():
+    #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
+
+def dect_arch():
+    #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
+
+
+
+def main():
+
+
+
+
+
+if __name__ == "__main__":
+    main() #NO TOQUES ESTO
