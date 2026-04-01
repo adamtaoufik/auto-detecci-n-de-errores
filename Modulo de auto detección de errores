@@ -57,24 +57,47 @@ def dect_servicios():
     #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
     # esta funcion se ejecuta al final
     OUTPUT_NETWORKMANAGER = run(f"systemctl is-active NetworkManager")
-       
-    OUTPUT_CRON = run(f"systemctl is-active NetworkManager")
-      
-    OUTPUT_SSH= run(f"systemctl is-active NetworkManager")
-       
-    OUTPUT_CUPS =run(f"systemctl is-active NetworkManager")
     if OUTPUT_NETWORKMANAGER == "active":
         print("ok")
     else:
-        run(f"reboot")
+        run(f"systemctl restart NetworkManager")
+        OUTPUT_NETWORKMANAGER = run(f"systemctl status NetworkManager")
         if OUTPUT_NETWORKMANAGER == "active":
             print("ok")
-
+        else:
+            run(f"notify-send error del servicio NetworkManager")
+    OUTPUT_CRON = run(f"systemctl is-active cron.service")
     if OUTPUT_CRON == "active":
+         print("ok")
+    else:
+        run(f"systemctl restart cron.service")
+        OUTPUT_CRON = run(f"systemctl status cron.service")
+        if OUTPUT_CRON == "active":
+            print("ok")
+        else:
+            run(f"notify-send error del servicio cron.service")
 
+    OUTPUT_SSH= run(f"systemctl is-active ssh.service")
     if OUTPUT_SSH == "active":
+         print("ok")
+    else:
+        run(f"systemctl restart ssh.service")
+        OUTPUT_SSH = run(f"systemctl status ssh.service")
+        if OUTPUT_SSH == "active":
+            print("ok")
+        else:
+            run(f"notify-send error del servicio ssh.service")
+    OUTPUT_CUPS = run(f"systemctl is-active cups.service")
+    if OUTPUT_CUPS == "active": 
+         print("ok")
+    else:
+        run(f"systemctl restart cups.service")
+        OUTPUT_CUPS= run(f"systemctl status cups.service")
+        if OUTPUT_CUPS == "active":
+            print("ok")
+        else:
+            run(f"notify-send error del servicio cups.service")
 
-    if OUTPUT_CUPS == "active" : 
        
 
 def dect_sys():
