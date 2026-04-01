@@ -56,43 +56,43 @@ def run(cmd, check=True): # funcion para ejecutar comandos en la terminal Uso: r
 def dect_servicios():
     #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
     # esta funcion se ejecuta al final
-    OUTPUT_NETWORKMANAGER = run(f"systemctl is-active NetworkManager")
-    if OUTPUT_NETWORKMANAGER == "active":
+    OUTPUT_NETWORKMANAGER = run(f"systemctl is-active NetworkManager") #Variable para que coja los resultados de los comandos que tengan que ver con el servicio NetworkManager
+    if OUTPUT_NETWORKMANAGER == "active": 
         print("ok")
     else:
         run(f"systemctl restart NetworkManager")
-        OUTPUT_NETWORKMANAGER = run(f"systemctl status NetworkManager")
-        if OUTPUT_NETWORKMANAGER == "active":
+        OUTPUT_NETWORKMANAGER = run(f"systemctl status NetworkManager") #cambio el contenido de la variable para volver a utilizar una condicion
+        if OUTPUT_NETWORKMANAGER == "active": 
             print("ok")
         else:
             run(f"notify-send error del servicio NetworkManager")
-    OUTPUT_CRON = run(f"systemctl is-active cron.service")
-    if OUTPUT_CRON == "active":
+    OUTPUT_CRON = run(f"systemctl is-active cron.service")    #Variable para que coja los resultados de los comandos que tengan que ver con el servicio cron
+    if OUTPUT_CRON == "active": 
          print("ok")
     else:
         run(f"systemctl restart cron.service")
-        OUTPUT_CRON = run(f"systemctl status cron.service")
+        OUTPUT_CRON = run(f"systemctl status cron.service") #cambio el contenido de la variable para volver a utilizar una condicion
         if OUTPUT_CRON == "active":
             print("ok")
         else:
             run(f"notify-send error del servicio cron.service")
 
-    OUTPUT_SSH= run(f"systemctl is-active ssh.service")
+    OUTPUT_SSH= run(f"systemctl is-active ssh.service") #Variable para que coja los resultados de los comandos que tengan que ver con el servicio ssh
     if OUTPUT_SSH == "active":
          print("ok")
     else:
         run(f"systemctl restart ssh.service")
-        OUTPUT_SSH = run(f"systemctl status ssh.service")
+        OUTPUT_SSH = run(f"systemctl status ssh.service") #cambio el contenido de la variable para volver a utilizar una condicion
         if OUTPUT_SSH == "active":
             print("ok")
         else:
             run(f"notify-send error del servicio ssh.service")
-    OUTPUT_CUPS = run(f"systemctl is-active cups.service")
+    OUTPUT_CUPS = run(f"systemctl is-active cups.service") #Variable para que coja los resultados de los comandos que tengan que ver con el servicio cups
     if OUTPUT_CUPS == "active": 
          print("ok")
     else:
         run(f"systemctl restart cups.service")
-        OUTPUT_CUPS= run(f"systemctl status cups.service")
+        OUTPUT_CUPS= run(f"systemctl status cups.service") #cambio el contenido de la variable para volver a utilizar una condicion
         if OUTPUT_CUPS == "active":
             print("ok")
         else:
