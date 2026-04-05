@@ -1,6 +1,6 @@
 # Hecho por Adam Taoufik Ezouhari
 #LIBRERIAS
-import psutill
+import psutil
 import os
 import subprocess
 import json
@@ -56,6 +56,7 @@ def run(cmd, check=True): # funcion para ejecutar comandos en la terminal Uso: r
 def dect_servicios():
     #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
     # esta funcion se ejecuta al final
+
     OUTPUT_NETWORKMANAGER = run(f"systemctl is-active NetworkManager") #Variable para que coja los resultados de los comandos que tengan que ver con el servicio NetworkManager
     if OUTPUT_NETWORKMANAGER == "active": 
         print("ok")
@@ -101,8 +102,25 @@ def dect_servicios():
        
 
 def dect_sys():
-    #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
+    
+    Procesador = psutil.cpu_percent (interval = 1) #Para saber cuanto porciento del procesador se esta utilizando (Le he puesto tambien un intervalo de 1 seg  ya que solo es para ver cuanto trabajo la CPU por segundo )
+    Memoria_ram = psutil.virtual_memory ().percent #Para saber cuanto porciento de la RAM se esta utilizando
+    Disco_duro = psutil.disk_usage ('/').percent #Para saber cuanto porciento del Disco duro se esta utilizando
+    temperatura = 0
 
+    try:
+        temperatura = psutil.sensors_temperatures ()['coretemp'][0].current #temperatura actual de la CPU
+    except:
+        temperatura = 0 #evita errores con el coretemp
+    for temperaturas in temperatura:
+    print (f"Procesador: {Procesador}%","{}ºC")
+    print (f"Memoria ram {Memoria_ram}%","{}ºC")
+    print (f"Disco duro: {Disco_duro}%","{}ºC")
+    procesador = procesador,
+    #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
+    if temperaturas > 80:
+    if temperaturas> 80:
+    if temperaturas > 80:
 def dect_arch():
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
 
