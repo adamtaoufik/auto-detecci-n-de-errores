@@ -12,21 +12,16 @@ import shutil
 
 #Variables
 
-CONFIG_FILE = "/home/plantilla.json"
-PLANTILLAS_DIR = "/home/plantillas"
-CONFIG_DIR = "/etc"
+CONFIG_FILE = "/home/plantilla.json" #
+PLANTILLAS = "/home/detector de errores/detector de errores/plantillas" #directorio donde se guardaran las copias de seguridad
 OUTPUT_NETWORKMANAGER = ()
 OUTPUT_CRON = ()
 OUTPUT_SSH = ()
 OUTPUT_CUPS = ()
 # añadir nombres de servicios como internet wifi impresora etc
-servicios = ["NetworkManager","cron","ssh","cups"] #NetworkManager=internet,cron=wifi,ssh por que si y cups=impresora
-
-archivos_configuraciones = { "ssh":"/etc/ssh/sshd_config","cups":"/etc/cups/cupsd.conf"} #diccionarios para
-
-
-
-
+servicios = ["cron","NetworkManager","ssh","cups"] #NetworkManager=internet,cron=wifi,ssh por que si y cups=impresora (esto lo puse solo para saber cual servicios voy a utilizar para este programa)
+rutas_archivos = {"wifi":"/etc/network/interfaces","internet":"/etc/resolv.conf","impresora":"/etc/cups/cupsd.conf","ssh":"/etc/ssh/sshd_config"} #diccionario que lo utilizare luego en la función  dect_arch para verificar que los archivos/rutas existen
+ 
 def load_config():
     if not os.path.exists(CONFIG_FILE):
         return {}
@@ -106,22 +101,40 @@ def dect_sys():
     Procesador = psutil.cpu_percent (interval = 1) #Para saber cuanto porciento del procesador se esta utilizando (Le he puesto tambien un intervalo de 1 seg  ya que solo es para ver cuanto trabajo la CPU por segundo )
     Memoria_ram = psutil.virtual_memory ().percent #Para saber cuanto porciento de la RAM se esta utilizando
     Disco_duro = psutil.disk_usage ('/').percent #Para saber cuanto porciento del Disco duro se esta utilizando
-    temperatura = 0
+    temperatura_cpu = 0
+    temperaturas = psutil.sensors_temperatures ()
 
+    
     try:
-        temperatura = psutil.sensors_temperatures ()['coretemp'][0].current #temperatura actual de la CPU
+        temperatura_cpu = temperaturas['coretemp'][0].current #temperatura actual de la CPU
     except:
-        temperatura = 0 #evita errores con el coretemp
-    for temperaturas in temperatura:
+        temperatura_cpu = 0 #evita errores con el coretemp
+    
+    if temperatura_cpu < 60:
+        estado_temp_cpu = (temperatura_cpu,"Temperatura buena")
+    elif temperatura_cpu < 80:
+        estado_temp_cpu = ("esta")
+    else:
+        temperatura_cpu > 80:
+
     print (f"Procesador: {Procesador}%","{}ºC")
     print (f"Memoria ram {Memoria_ram}%","{}ºC")
     print (f"Disco duro: {Disco_duro}%","{}ºC")
     procesador = procesador,
     #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
-    if temperaturas > 80:
+    if temperaturas > 55:
     if temperaturas> 80:
     if temperaturas > 80:
 def dect_arch():
+   for nombre,ruta in rutas_archivos.items(): #nombre tendra el servicio y la ruta tendra bueno las rutas xd 
+            if os.path.exists(rutas): #si existe la ruta
+                print (f"el archivo del servicio {nombre} existe") #existe el servicio
+            else: #si no existe la ruta
+                print (f"falta el archivo del servicio {nombre}",) #informa el programa que no esta al usuario
+                plantilla= f"{PLANTILLAS}/{nombre}"
+                if os.path.exists(plantilla):
+                    print(f"")
+
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
 
 
