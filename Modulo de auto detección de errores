@@ -13,7 +13,7 @@ import shutil
 #Variables
 
 CONFIG_FILE = "/home/plantilla.json" #
-PLANTILLAS = "/home/detector de errores/detector de errores/plantillas" #directorio donde se guardaran las copias de seguridad
+PLANTILLAS = "/home/detector de errores/detector de errores/plantillas" #directorio donde se guardaran las copias de seguridad de los servicios (que tambien se utilizara para la función dect_arch)
 OUTPUT_NETWORKMANAGER = ()
 OUTPUT_CRON = ()
 OUTPUT_SSH = ()
@@ -127,13 +127,16 @@ def dect_sys():
     if temperaturas > 80:
 def dect_arch():
    for nombre,ruta in rutas_archivos.items(): #nombre tendra el servicio y la ruta tendra bueno las rutas xd 
-            if os.path.exists(rutas): #si existe la ruta
+            if os.path.exists(ruta): #si existe la ruta
                 print (f"el archivo del servicio {nombre} existe") #existe el servicio
             else: #si no existe la ruta
                 print (f"falta el archivo del servicio {nombre}",) #informa el programa que no esta al usuario
-                plantilla= f"{PLANTILLAS}/{nombre}"
-                if os.path.exists(plantilla):
-                    print(f"")
+                plantilla= f"{PLANTILLAS}/{nombre}" #variable ruta de la copia de seguridad que se necesita
+                run (f"cp {plantilla}  {ruta}") # comando para copiar la copia de seguridad y ponerlo donde corresponderia
+                if os.path.exists(plantilla): #otro chequeo si esta
+                    print(f"el archivo ya existe servicio {nombre} existe") #si funciono
+                else:
+                    print(f"ERROR NO ESTA RESTAURADO EL ARCHIVO DEL SERVICIO {nombre}") #si no funciona
 
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
 
