@@ -11,7 +11,7 @@ import shutil
 
 
 #Variables
-
+#Aqui solo puse las variables principales que voy a utilizar (menos servicios que es solo para ser informativa)
 CONFIG_FILE = "/home/plantilla.json" #
 PLANTILLAS = "/home/detector de errores/detector de errores/plantillas" #directorio donde se guardaran las copias de seguridad de los servicios (que tambien se utilizara para la función dect_arch)
 OUTPUT_NETWORKMANAGER = ()
@@ -21,7 +21,8 @@ OUTPUT_CUPS = ()
 # añadir nombres de servicios como internet wifi impresora etc
 servicios = ["cron","NetworkManager","ssh","cups"] #NetworkManager=internet,cron=wifi,ssh por que si y cups=impresora (esto lo puse solo para saber cual servicios voy a utilizar para este programa)
 rutas_archivos = {"wifi":"/etc/network/interfaces","internet":"/etc/resolv.conf","impresora":"/etc/cups/cupsd.conf","ssh":"/etc/ssh/sshd_config"} #diccionario que lo utilizare luego en la función  dect_arch para verificar que los archivos/rutas existen
- 
+Temperatura_inicial_cpu = none # al encender el sistema guardara la temperatura
+Temperatura_maxima_cpu = 0  #guardara la temperatura más alta del sistema
 def load_config():
     if not os.path.exists(CONFIG_FILE):
         return {}
@@ -51,6 +52,10 @@ def run(cmd, check=True): # funcion para ejecutar comandos en la terminal Uso: r
 def dect_servicios():
     #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
     # esta funcion se ejecuta al final
+    global OUTPUT_CRON #para que se pueda cambiar la variable OUTPUT_CRON afuera de def
+    global OUTPUT_CUPS #para que se pueda cambiar la variable OUTPUT_CUPS afuera de def
+    global OUTPUT_NETWORKMANAGER #para que se pueda cambiar la variable OUTPUT_NETWORKMANAGER afuera de def
+    global OUTPUT_SSH #para que se pueda cambiar la variable OUTPUT_SSH afuera de def
 
     OUTPUT_NETWORKMANAGER = run(f"systemctl is-active NetworkManager") #Variable para que coja los resultados de los comandos que tengan que ver con el servicio NetworkManager
     if OUTPUT_NETWORKMANAGER == "active": 
@@ -97,12 +102,15 @@ def dect_servicios():
        
 
 def dect_sys():
-    
+    global Temperatura_inicial_cpu
+    global Temperatura_maxima_cpu
+
     Procesador = psutil.cpu_percent (interval = 1) #Para saber cuanto porciento del procesador se esta utilizando (Le he puesto tambien un intervalo de 1 seg  ya que solo es para ver cuanto trabajo la CPU por segundo )
     Memoria_ram = psutil.virtual_memory ().percent #Para saber cuanto porciento de la RAM se esta utilizando
     Disco_duro = psutil.disk_usage ('/').percent #Para saber cuanto porciento del Disco duro se esta utilizando
-    temperatura_cpu = 0
+    temperatura_cpu = 0 #guardara la temperatura actual de la cpu
     temperaturas = psutil.sensors_temperatures ()
+    
 
     
     try:
@@ -110,22 +118,35 @@ def dect_sys():
     except:
         temperatura_cpu = 0 #evita errores con el coretemp
     
-    if temperatura_cpu < 60:
-        estado_temp_cpu = (temperatura_cpu,"Temperatura buena")
-    elif temperatura_cpu < 80:
-        estado_temp_cpu = ("esta")
-    else:
-        temperatura_cpu > 80:
+if Temperatura_inicial_cpu is none : #al arrancar
+    Temperatura_inicial_cpu = temperatura_cpu #la variable cojera la primera temperatura de la CPU
 
-    print (f"Procesador: {Procesador}%","{}ºC")
-    print (f"Memoria ram {Memoria_ram}%","{}ºC")
-    print (f"Disco duro: {Disco_duro}%","{}ºC")
-    procesador = procesador,
+    if Temperatura_inicial_cpu > 55: #si la temperatura es más alta que 55
+        print(f"ADVERTENCIA:Temperatura inicial de CPU demasiada alta ({Temperatura_inicial_cpu}ºC)")  #advertira al usuario y pondra la temperatura
+    else: # sino
+        print(f"Temperatura inicial de CPU: ({Temperatura_inicial_cpu}) ") #pues solo dara la temperatura
+
+
+if temperatura_cpu > Temperatura_maxima_cpu: #para coger la temperatura máxima a la que haya llegado la CPU
+    Temperatura_maxima_cpu = temperatura_cpu 
+
+
+
+
+if Temperatura_maxima_cpu > 90 : #si llega a ser muy alta advierte al usuario
+    print(f"ADVERTENCIA: temperatura máxima demasiada alta {Temperatura_maxima_cpu}")
+
+print (f"Procesador: ({Procesador}%)")#Uso del procesador
+print (f"Memoria ram: ({Memoria_ram}%)")#Uso de la Ram
+print (f"Disco duro: ({Disco_duro}%)")#Uso del disco duro
     #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
-    if temperaturas > 55:
-    if temperaturas> 80:
-    if temperaturas > 80:
+   
+
+
 def dect_arch():
+   global PLANTILLAS #Para que pueda utilizar la variable PLANTILLAS aunque este afuera del def
+   global rutas_archivos # Para que pueda utilizar la variable rutas_archivos aunque este afuera del def
+
    for nombre,ruta in rutas_archivos.items(): #nombre tendra el servicio y la ruta tendra bueno las rutas xd 
             if os.path.exists(ruta): #si existe la ruta
                 print (f"el archivo del servicio {nombre} existe") #existe el servicio
@@ -139,9 +160,6 @@ def dect_arch():
                     print(f"ERROR NO ESTA RESTAURADO EL ARCHIVO DEL SERVICIO {nombre}") #si no funciona
 
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
-
-
-
 def main():
 
 
