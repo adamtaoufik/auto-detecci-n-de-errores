@@ -169,8 +169,8 @@ def dect_arch():
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
 def main():
     print("Empezando el detector de errores") #para informar
-    global config
-    config= load_config()
+    global config #para que lo entiendán las otras funciones
+    config= load_config() #Con esto ahora todas las funciones puede utilizar el JSON
     while True: #bucle infinito
         try: #el programa sigue sin detenerse  ejecutando constantemente los tres programas
             dect_arch()
