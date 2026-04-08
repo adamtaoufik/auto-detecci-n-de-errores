@@ -172,14 +172,14 @@ def main():
     global config
     config= load_config()
     while True: #bucle infinito
-        try: #el programa sigue sin detenerse ejecutando constantemente los tres programas
+        try: #el programa sigue sin detenerse  ejecutando constantemente los tres programas
             dect_arch()
             dect_servicios()
             dect_sys()
         except Exception as e: #cualquier error sera una exception y se guardara en una variable
             run(f"notify-send Error en el sistema: {e}") #notificación al tener el error 
  
-        time.sleep(10) #para cada 10 segundos tras terminar el programa
+        time.sleep(3) #solo le he puesto esta pausa por si acaso 
 
     
 
