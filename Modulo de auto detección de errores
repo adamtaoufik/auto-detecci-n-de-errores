@@ -104,6 +104,10 @@ def dect_servicios():
 def dect_sys():
     global Temperatura_inicial_cpu
     global Temperatura_maxima_cpu
+    global Procesador
+    global Memoria_ram
+    global Disco_duro
+    global temperatura_cpu
 
     Procesador = psutil.cpu_percent (interval = 1) #Para saber cuanto porciento del procesador se esta utilizando (Le he puesto tambien un intervalo de 1 seg  ya que solo es para ver cuanto trabajo la CPU por segundo )
     Memoria_ram = psutil.virtual_memory ().percent #Para saber cuanto porciento de la RAM se esta utilizando
@@ -172,10 +176,10 @@ def main():
             dect_arch()
             dect_servicios()
             dect_sys()
-        except Exception as e: #Si falla algo
-            print(f"Error en el sistema: {e}")
-
-        time.sleep(10)
+        except Exception as e: #cualquier error sera una exception y se guardara en una variable
+            run(f"notify-send Error en el sistema: {e}") #notificación al tener el error 
+ 
+        time.sleep(10) #para cada 10 segundos tras terminar el programa
 
     
 
