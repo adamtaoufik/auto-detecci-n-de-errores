@@ -5,7 +5,7 @@ import os
 import subprocess
 import json
 import shutil
-
+import time 
 
 
 
@@ -134,11 +134,14 @@ if temperatura_cpu > Temperatura_maxima_cpu: #para coger la temperatura máxima 
 
 
 if Temperatura_maxima_cpu > 90 : #si llega a ser muy alta advierte al usuario
-    print(f"ADVERTENCIA: temperatura máxima demasiada alta {Temperatura_maxima_cpu}")
+    run(f"notify_send la CPU esta demasiado caliente:({Temperatura_maxima_cpu}ºC)")
 
 print (f"Procesador: ({Procesador}%)")#Uso del procesador
 print (f"Memoria ram: ({Memoria_ram}%)")#Uso de la Ram
 print (f"Disco duro: ({Disco_duro}%)")#Uso del disco duro
+print (f"Temperatura del sistema actual({temperatura_cpu}ºC)")
+print (f"Temperatura del sistema al iniciarlo ({Temperatura_inicial_cpu})")
+print (f"Temperatura máxima que haya llegado el sistema({Temperatura_maxima_cpu})")
     #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
    
 
@@ -161,7 +164,20 @@ def dect_arch():
 
     #detecta archivos importantes de configuracion y si estan presentes  si no lo estan importa una plantilla de la carpeta plantillas e importa las plantillas
 def main():
+    print("Empezando el detector de errores") #para informar
+    global config
+    config= load_config()
+    while True: #bucle infinito
+        try: #el programa sigue sin detenerse ejecutando constantemente los tres programas
+            dect_arch()
+            dect_servicios()
+            dect_sys()
+        except Exception as e: #Si falla algo
+            print(f"Error en el sistema: {e}")
 
+        time.sleep(10)
+
+    
 
 
 
