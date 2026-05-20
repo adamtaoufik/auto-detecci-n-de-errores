@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Hecho por Adam Taoufik Ezouhari
 #LIBRERIAS
 import psutil
@@ -13,11 +14,11 @@ import time
 #Variables
 #Aqui solo puse las variables principales que voy a utilizar (menos servicios que es solo para ser informativa)
 
-CONFIG_FILE = "/home/plantilla.json" 
+CONFIG_FILE = "" 
 
 
 
-PLANTILLAS = "/home/detector de errores/detector de errores/plantillas"#directorio donde se guardaran las copias de seguridad de los servicios (que tambien se utilizara para la función dect_arch)
+PLANTILLAS = ""#directorio donde se guardaran las copias de seguridad de los servicios (que tambien se utilizara para la función dect_arch)
 
 OUTPUT_NETWORKMANAGER = ""
 
@@ -32,7 +33,7 @@ OUTPUT_CUPS = ""
 
 servicios = ["cron","NetworkManager","ssh","cups"] #NetworkManager=internet,cron=wifi,ssh por que si y cups=impresora (esto lo puse solo para saber cual servicios voy a utilizar para este programa)
 rutas_archivos = {"wifi":"/etc/network/interfaces","internet":"/etc/resolv.conf","impresora":"/etc/cups/cupsd.conf","ssh":"/etc/ssh/sshd_config"} #diccionario que lo utilizare luego en la función  dect_arch para verificar que los archivos/rutas existen
-Temperatura_inicial_cpu = none # al encender el sistema guardara la temperatura
+Temperatura_inicial_cpu = None # al encender el sistema guardara la temperatura
 Temperatura_maxima_cpu = 0  #guardara la temperatura más alta del sistema
 
 
@@ -56,34 +57,59 @@ def save_config(config):
 
 
 
-
-#funciones
-def run(cmd, check=True): # funcion para ejecutar comandos en la terminal Uso: run("ls -l")
-    return subprocess.run(cmd, shell=True, check=check, capture_output=True, text=True)
+def run(cmd, check=True):
+    return subprocess.run(
+        cmd,
+        shell=True,
+        check=check,
+        capture_output=True,
+        text=True
+    )
 
 
 def dect_servicios():
-    #con run() haz un system status a cada servicio y captura el output si esta funcionando bien hz un print ok si no intenta reiniciar si sigue igual despues del reinicio haaz una ventana emergente con error
-    # esta funcion se ejecuta al final
-    global OUTPUT_CRON #para que se pueda cambiar la variable OUTPUT_CRON afuera de def
-    global OUTPUT_CUPS #para que se pueda cambiar la variable OUTPUT_CUPS afuera de def
-    global OUTPUT_NETWORKMANAGER #para que se pueda cambiar la variable OUTPUT_NETWORKMANAGER afuera de def
-    global OUTPUT_SSH #para que se pueda cambiar la variable OUTPUT_SSH afuera de def
 
-    nomb_servicios = [OUTPUT_CRON,OUTPUT_NETWORKMANAGER,OUTPUT_SSH,OUTPUT_CUPS]
+    for servicio in servicios:
 
-    for i in servicio:
-        nomb_servicios[i] =run(f"systemctl is-active {servicio[i]}")
-        if nomb_servicios[i] == "active":
-            print(servicio[i] + "ok")    
+        resp = run(
+            f"systemctl is-active {servicio}",
+            check=False
+        )
+
+        estado = resp.stdout.strip()
+
+        if estado == "active":
+            print(servicio + " ok")
+
         else:
-            run(f"systemctl restart {servicio[i]}")
-            nomb_servicios[i] =run(f"systemctl is-active {servicio[i]}")
+
+            print(servicio + " caído, reiniciando...")
+
+            run(
+                f"systemctl restart {servicio}",
+                check=False
+            )
+
             time.sleep(0.2)
-            if nomb_servicios[i] == "active":
-                print(servicio[i] + "ok")    
-            else:   
-                run(f"notify-send error del servicio {servicio[i]} ")
+
+            resp = run(
+                f"systemctl is-active {servicio}",
+                check=False
+            )
+
+            estado = resp.stdout.strip()
+
+            if estado == "active":
+                print(servicio + " recuperado")
+
+            else:
+
+                print("error en " + servicio)
+
+                run(
+                    f'notify-send "Error del servicio {servicio}"',
+                    check=False
+                )
 
 def dect_sys():
     global Temperatura_inicial_cpu
@@ -106,8 +132,8 @@ def dect_sys():
     except:
         temperatura_cpu = 0 #evita errores con el coretemp
     
-if Temperatura_inicial_cpu is none : #al arrancar
-    Temperatura_inicial_cpu = temperatura_cpu #la variable cojera la primera temperatura de la CPU
+    if Temperatura_inicial_cpu is None : #al arrancar
+        Temperatura_inicial_cpu = temperatura_cpu #la variable cojera la primera temperatura de la CPU
 
     if Temperatura_inicial_cpu > 55: #si la temperatura es más alta que 55
         print(f"ADVERTENCIA:Temperatura inicial de CPU demasiada alta ({Temperatura_inicial_cpu}ºC)")  #advertira al usuario y pondra la temperatura
@@ -115,23 +141,23 @@ if Temperatura_inicial_cpu is none : #al arrancar
         print(f"Temperatura inicial de CPU: ({Temperatura_inicial_cpu}) ") #pues solo dara la temperatura
 
 
-if temperatura_cpu > Temperatura_maxima_cpu: #para coger la temperatura máxima a la que haya llegado la CPU
-    Temperatura_maxima_cpu = temperatura_cpu 
+    if temperatura_cpu > Temperatura_maxima_cpu: #para coger la temperatura máxima a la que haya llegado la CPU
+        Temperatura_maxima_cpu = temperatura_cpu 
 
 
 
 
-if Temperatura_maxima_cpu > 90 : #si llega a ser muy alta advierte al usuario
-    run(f"notify_send la CPU esta demasiado caliente:({Temperatura_maxima_cpu}ºC)")
+    if Temperatura_maxima_cpu > 90 : #si llega a ser muy alta advierte al usuario
+        run(f"notify_send la CPU esta demasiado caliente:({Temperatura_maxima_cpu}ºC)")
 
-print(f"Procesador: ({Procesador}%)")#Uso del procesador
-print(f"Memoria ram: ({Memoria_ram}%)")#Uso de la Ram
-print(f"Disco duro: ({Disco_duro}%)")#Uso del disco duro
-print(f"Temperatura del sistema actual({temperatura_cpu}ºC)")
-print(f"Temperatura del sistema al iniciarlo ({Temperatura_inicial_cpu})")
-print(f"Temperatura máxima que haya llegado el sistema({Temperatura_maxima_cpu})")
-    #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
-   
+    print(f"Procesador: ({Procesador}%)")#Uso del procesador
+    print(f"Memoria ram: ({Memoria_ram}%)")#Uso de la Ram
+    print(f"Disco duro: ({Disco_duro}%)")#Uso del disco duro
+    print(f"Temperatura del sistema actual({temperatura_cpu}ºC)")
+    print(f"Temperatura del sistema al iniciarlo ({Temperatura_inicial_cpu})")
+    print(f"Temperatura máxima que haya llegado el sistema({Temperatura_maxima_cpu})")
+        #con psutill detecta el uso de cada componente mayor y determina si es por error o por uso cotidiano sobretodo importante compara picos de temperatura 
+    
 
 
 def dect_arch():
@@ -165,7 +191,7 @@ def main():
         except Exception as e: #cualquier error sera una exception y se guardara en una variable
             run(f"notify-send Error en el sistema: {e}") #notificación al tener el error 
  
-        time.sleep(0.1) #solo le he puesto esta pausa por si acaso 
+        time.sleep(20) #solo le he puesto esta pausa por si acaso 
 
     
 
