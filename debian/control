@@ -1,9 +1,10 @@
-Source: detector-de-errores
+Source: ade-tau
 Section: utils
 Priority: optional
 Maintainer: alex <tuceac72@gmail.com>
 Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13),python
 
-Package: detector-de-errores
+Package: ade-tau
 Architecture: all
 Depends: python3
